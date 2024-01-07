@@ -1,3 +1,5 @@
+**NOTE:** Refer Kotlin's official website for detailed doc - https://kotlinlang.org/docs/home.html
+
 # Features of Kotlin
 **Concise:** Kotlin reduces writing the extra codes. This makes Kotlin more concise. \
 **Null safety:** Kotlin is null safety language. Kotlin aimed to eliminate the NullPointerException (null reference) 
@@ -341,4 +343,393 @@ do {
 ```
 
 # Functions 
-TODO ...
+
+- function parameters are written within parentheses `()`.
+- each parameter must have a type, and multiple parameters must be separated by commas `,`.
+- the return type is written after the function's parentheses (), separated by a colon `:`.
+- the body of a function is written within curly braces `{}`. 
+- the `return` keyword is used to exit or return something from a function.
+
+```kotlin
+fun hello() {
+    return println("Hello, world!")
+}
+fun sum(x: Int, y: Int): Int {
+    return x + y
+}
+fun main() {
+    hello()
+    println(sum(1, 2))
+    // 3
+}
+```
+## Named Arguments
+
+With named argument parameters, you can write the parameters in any order. See below example where arguments are 
+swapped in a caller.
+
+```kotlin
+fun printMessageWithPrefix(message: String, prefix: String) {
+    println("[$prefix] $message")
+}
+
+fun main() {
+    // Uses named arguments with swapped parameter order
+    printMessageWithPrefix(prefix = "Log", message = "Hello")
+    // [Log] Hello
+}
+```
+
+## Default parameter values
+To declare a default value, use the assignment operator = after the type:
+```kotlin
+fun printMessageWithPrefix(message: String, prefix: String = "Info") {
+    println("[$prefix] $message")
+}
+
+fun main() {
+    // Function called with both parameters
+    printMessageWithPrefix("Hello", "Log") 
+    // [Log] Hello
+    
+    // Function called only with message parameter
+    printMessageWithPrefix("Hello")        
+    // [Info] Hello
+    
+    printMessageWithPrefix(prefix = "Log", message = "Hello")
+    // [Log] Hello
+}
+```
+
+## Single expression functions
+The `sum()` function then becomes one line:
+
+```kotlin
+// before
+// fun sum(x: Int, y: Int): Int {
+//    return x + y
+// }
+
+// After
+fun sum(x: Int, y: Int) = x + y // single-expression function
+
+fun main() {
+    println(sum(1, 2))
+    // 3
+}
+```
+
+**NOTE:** Omitting the return type is only possible when your function has no body (`{}`). Unless your function's return 
+type is `Unit`.
+
+## Lambda Expressions
+For example, the following uppercaseString() function:
+```kotlin
+fun uppercaseString(string: String): String {
+    return string.uppercase()
+}
+fun main() {
+    println(uppercaseString("hello"))
+    // HELLO
+}
+```
+Can also be written as a lambda expression:
+```kotlin
+fun main() {
+    println({ string: String -> string.uppercase() }("hello"))
+    // HELLO
+}
+```
+
+Lambda expressions can be hard to understand at first glance so let's break it down. Lambda expressions are written within curly braces `{}`.
+
+Within the lambda expression, you write:
+
+- the parameters followed by an `->`. 
+- the function body after the `->`.
+
+In the previous example:
+- `string` is a function parameter. 
+- `string` has type `String`. 
+- the function returns the result of the `.uppercase()` function called on `string`.
+
+Lambda expressions can be used in a number of ways. You can:
+
+* assign a lambda to a variable that you can then invoke later 
+* pass a lambda expression as a parameter to another function 
+* return a lambda expression from a function 
+* invoke a lambda expression on its own
+
+### Assign to variable
+```kotlin
+fun main() {
+    val upperCaseString = { string: String -> string.uppercase() }
+    println(upperCaseString("hello"))
+    // HELLO
+}
+```
+### Pass to another function
+```kotlin
+val numbers = listOf(1, -2, 3, -4, 5, -6)
+val positives = numbers.filter { x -> x > 0 }
+val negatives = numbers.filter { x -> x < 0 }
+println(positives)
+// [1, 3, 5]
+println(negatives)
+// [-2, -4, -6]
+```
+The `.filter()` function accepts a lambda expression as a predicate:
+
+### Function types
+The syntax for a function type has:
+
+- each parameter's type written within parentheses `() `and separated by commas` ,`.
+
+- the return type written after `->`.
+
+For example: `(String) -> String` or `(Int, Int) -> Int`.
+```kotlin
+val upperCaseString: (String) -> String = { string -> string.uppercase() }
+
+fun main() {
+    println(upperCaseString("hello"))
+    // HELLO
+}
+```
+
+### Return from a function
+```kotlin
+fun toSeconds(time: String): (Int) -> Int = when (time) {
+    "hour" -> { value -> value * 60 * 60 }
+    "minute" -> { value -> value * 60 }
+    "second" -> { value -> value }
+    else -> { value -> value }
+}
+
+fun main() {
+    val timesInMinutes = listOf(2, 10, 15, 1)
+    val min2sec = toSeconds("minute")
+    val totalTimeInSeconds = timesInMinutes.map(min2sec).sum()
+    println("Total time is $totalTimeInSeconds secs")
+    // Total time is 1680 secs
+}
+```
+
+### Invoke separately
+```kotlin
+println({ string: String -> string.uppercase() }("hello"))
+// HELLO
+```
+
+### Trailing Lambdas
+As you have already seen, if a lambda expression is the only function parameter, you can drop the function parentheses` ()`. If a lambda expression is passed as the last parameter of a function, then the expression can be written outside the function parentheses `()`. In both cases, this syntax is called a **trailing lambda**.
+
+For example, the `.fold()` function accepts an initial value and an operation:
+```kotlin
+// The initial value is zero. 
+// The operation sums the initial value with every item in the list cumulatively.
+println(listOf(1, 2, 3).fold(0, { x, item -> x + item })) // 6
+
+// Alternatively, in the form of a trailing lambda
+println(listOf(1, 2, 3).fold(0) { x, item -> x + item })  // 6
+```
+
+# Classes
+
+To declare a class, use the `class` keyword:
+```kotlin
+class Customer
+```
+
+## Properties
+Characteristics of a class's object can be declared in properties. You can declare properties for a class:
+- Within parentheses `()` after the class name.
+```kotlin
+class Contact(val id: Int, var email: String)
+```
+- Within the class body defined by curly braces `{}`.
+```kotlin
+class Contact(val id: Int, var email: String) {
+    val category: String = ""
+}
+```
+You can declare properties without `val` or `var` within parentheses but these properties are not accessible after an instance has been created.
+
+**NOTE:** The content contained within parentheses `()` is called the class header.
+
+## Constructor
+By default, Kotlin automatically creates a constructor with the parameters declared in the class header.
+
+Kotlin classes can have many constructors, including ones that you define yourself.
+
+A class in Kotlin has a **primary** constructor and possibly one or more **secondary** constructors. The primary constructor is declared in the class header, and it goes after the class name and optional type parameters.
+
+## Create Instance
+To create an object from a class, you declare a class **instance** using a **constructor**.
+
+```kotlin
+class Contact(val id: Int, var email: String)
+
+fun main() {
+    val contact = Contact(1, "mary@gmail.com")
+}
+```
+
+In the example:
+
+- `Contact` is a class. 
+- `contact` is an instance of the `Contact` class. 
+- `id` and `email` are properties. 
+- `id` and `email` are used with the default constructor to create `contact`.
+
+## Visibility Modifiers
+There are four visibility modifiers in Kotlin: `private`, `protected`, `internal`, and `public`. The default visibility is public.
+
+```kotlin
+// file name: example.kt
+package foo
+
+private fun foo() { ... } // visible inside example.kt
+
+public var bar: Int = 5 // property is visible everywhere
+    private set         // setter is visible only in example.kt
+
+internal val baz = 6    // visible inside the same module
+```
+
+For members declared inside a **class**:
+- `private` means that the member is visible inside this class only (including all its members).
+- `protected` means that the member has the same visibility as one marked as private, but that it is also visible in 
+subclasses.
+- `internal` means that any client inside this module who sees the declaring class sees its internal members.
+- `public` means that any client who sees the declaring class sees its public members.
+
+## Access Properties
+To access a property of an instance, write the name of the property after the instance name appended with a period `.`:
+```kotlin
+class Contact(val id: Int, var email: String)
+
+fun main() {
+    val contact = Contact(1, "mary@gmail.com")
+    
+    // Prints the value of the property: email
+    println(contact.email)           
+    // mary@gmail.com
+
+    // Updates the value of the property: email
+    contact.email = "jane@gmail.com"
+    
+    // Prints the new value of the property: email
+    println(contact.email)           
+    // jane@gmail.com
+}
+```
+
+## Member Functions
+To call a member function on an instance, write the function name after the instance name appended with a period `.`. For example:
+```kotlin
+class Contact(val id: Int, var email: String) {
+    fun printId() {
+        println(id)
+    }
+}
+
+fun main() {
+    val contact = Contact(1, "mary@gmail.com")
+    // Calls member function printId()
+    contact.printId()           
+    // 1
+}
+```
+## Data Classes
+Kotlin has **data classes** which are particularly useful for storing data. Data classes have the same functionality as classes, but **they come automatically with additional member functions**. These member functions allow you to easily print the instance to readable output, compare instances of a class, copy instances, and more. As these functions are automatically available, you don't have to spend time writing the same boilerplate code for each of your classes.
+
+To declare a data class, use the keyword `data`:
+```kotlin
+data class User(val name: String, val id: Int)
+```
+
+The most useful predefined member functions of data classes are:
+
+| Function          | Description                                                                              |
+|-------------------|------------------------------------------------------------------------------------------|
+| `.toString()`     | Prints a readable string of the class instance and its properties.                       |
+| `.equals() or ==` | Compares instances of a class.                                                           | 
+| `.copy()`         | Creates a class instance by copying another, potentially with some different properties. | 
+
+
+# Null Safety
+In Kotlin, it's possible to have a `null` value. To help prevent issues with `null` values in your programs, Kotlin has null safety in place. Null safety detects potential problems with `null` values at **compile time, rather than at run time**.
+
+Null safety is a combination of features that allow you to:
+
+- explicitly declare when `null` values are allowed in your program.
+- check for `null` values.
+- use safe calls to properties or functions that may contain `null` values.
+- declare actions to take if `null` values are detected.
+
+## Nullable Types
+Kotlin supports nullable types which allows the possibility for the declared type to have `null` values. By default, a type is **not** allowed to accept `null` values. Nullable types are declared by explicitly adding `?` after the type declaration.
+
+```kotlin
+fun main() {
+    // neverNull has String type
+    var neverNull: String = "This can't be null"
+
+    // Throws a compiler error
+    neverNull = null
+
+    // nullable has nullable String type
+    var nullable: String? = "You can keep a null here"
+
+    // This is OK  
+    nullable = null
+
+    // By default, null values aren't accepted
+    var inferredNonNull = "The compiler assumes non-nullable"
+
+    // Throws a compiler error
+    inferredNonNull = null
+
+    // notNull doesn't accept null values
+    fun strLength(notNull: String): Int {                 
+        return notNull.length
+    }
+
+    println(strLength(neverNull)) // 18
+    println(strLength(nullable))  // Throws a compiler error
+}
+```
+
+## Use safe calls
+To safely access properties of an object that might contain a `null` value, use the safe call operator `?.`. The safe call operator returns null if the object's property is `null`. This is useful if you want to avoid the presence of `null` values triggering errors in your code.
+
+```kotlin
+fun lengthString(maybeString: String?): Int? = maybeString?.length
+
+fun main() { 
+    var nullString: String? = null
+    println(lengthString(nullString))
+    // null
+}
+```
+
+```kotlin
+// Safe calls can be chained so that if any property of an object contains a null value, then null is returned without an error being thrown. For example:
+person.company?.address?.country
+```
+
+## Use Elvis Operator
+You can provide a default value to return if a `null` value is detected by using the **Elvis operator** `?:`.
+
+In the following example, `nullString` is `null` so the safe call to access the `length` property returns a `null` value. As a result, the Elvis operator returns `0`:
+```kotlin
+fun main() {
+    var nullString: String? = null
+    println(nullString?.length ?: 0)
+    // 0
+}
+```
+
+
+
